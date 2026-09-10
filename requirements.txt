@@ -1,4 +1,4 @@
 streamlit
-anthropic
+google-genai
 pillow
 pydantic

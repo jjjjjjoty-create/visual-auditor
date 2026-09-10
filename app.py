@@ -36,6 +36,14 @@ st.markdown(
         margin-bottom: 30px;
     }
 
+    .info-box {
+        background: #ffffff;
+        padding: 18px 22px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border: 1px solid #e5e0dc;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -47,26 +55,31 @@ st.title("VISUAL AUDITOR")
 st.markdown(
     """
     <div class="subtitle">
-    AI-powered visual design audit
+    ИИ-аудит и профессиональный редизайн рекламной графики
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-st.write(
+st.markdown(
     """
-    Загрузите изображение, и AI проведет профессиональный
-    визуальный аудит по 15 принципам графического дизайна.
-
-    Анализ основывается только на визуально доступной информации.
-    Каждое существенное замечание должно быть обосновано.
-    """
+    <div class="info-box">
+    <b>Как это работает</b><br><br>
+    VISUAL AUDITOR анализирует изображение по 15 принципам
+    графического дизайна, находит реальные визуальные проблемы
+    и формирует конкретный план редизайна.<br><br>
+    Если исходная композиция перегружена или неэффективна,
+    система может предложить <b>полностью перестроить её</b>,
+    а не просто слегка изменить существующие элементы.
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 
 uploaded_file = st.file_uploader(
-    "Загрузите изображение",
+    "Загрузите рекламное изображение",
     type=[
         "jpg",
         "jpeg",
@@ -89,7 +102,7 @@ if uploaded_file:
     )
 
     st.caption(
-        f"Размер изображения: {width} × {height}px"
+        f"Размер изображения: {width} × {height} px"
     )
 
 
@@ -99,7 +112,7 @@ if uploaded_file:
     ):
 
         with st.spinner(
-            "Gemini анализирует изображение..."
+            "AI анализирует композицию, иерархию, цвет, типографику и визуальную нагрузку..."
         ):
 
             try:
@@ -141,7 +154,7 @@ if "audit_result" in st.session_state:
     with col1:
 
         st.metric(
-            "Design Score",
+            "Оценка дизайна",
             f"{result.overall_design_score}/100"
         )
 
@@ -149,7 +162,7 @@ if "audit_result" in st.session_state:
     with col2:
 
         st.metric(
-            "Communication Score",
+            "Оценка коммуникации",
             f"{result.communication_score}/100"
         )
 
@@ -158,68 +171,28 @@ if "audit_result" in st.session_state:
 
     st.header("Анализ 15 принципов")
 
+    st.caption(
+        "Каждая оценка сопровождается визуальным доказательством "
+        "и объяснением влияния на восприятие."
+    )
+
 
     principles = [
-        (
-            "Композиция",
-            result.composition
-        ),
-        (
-            "Визуальная иерархия",
-            result.visual_hierarchy
-        ),
-        (
-            "Баланс",
-            result.balance
-        ),
-        (
-            "Контраст",
-            result.contrast
-        ),
-        (
-            "Типографика",
-            result.typography
-        ),
-        (
-            "Цвет",
-            result.color
-        ),
-        (
-            "Негативное пространство",
-            result.negative_space
-        ),
-        (
-            "Выравнивание",
-            result.alignment
-        ),
-        (
-            "Близость и группировка",
-            result.proximity_grouping
-        ),
-        (
-            "Повтор и ритм",
-            result.repetition_rhythm
-        ),
-        (
-            "Единство и визуальная согласованность",
-            result.unity_coherence
-        ),
-        (
-            "Читаемость и доступность",
-            result.readability_accessibility
-        ),
-        (
-            "Фокусная точка",
-            result.focal_point
-        ),
-        (
-            "Пропорции и масштаб",
-            result.proportion_scale
-        ),
-        (
-            "Общая визуальная согласованность",
-            result.overall_coherence
-        ),
+        ("Композиция", result.composition),
+        ("Визуальная иерархия", result.visual_hierarchy),
+        ("Баланс", result.balance),
+        ("Контраст", result.contrast),
+        ("Типографика", result.typography),
+        ("Цвет", result.color),
+        ("Негативное пространство", result.negative_space),
+        ("Выравнивание", result.alignment),
+        ("Близость и группировка", result.proximity_grouping),
+        ("Повтор и ритм", result.repetition_rhythm),
+        ("Единство и визуальная согласованность", result.unity_coherence),
+        ("Читаемость и доступность", result.readability_accessibility),
+        ("Фокусная точка", result.focal_point),
+        ("Пропорции и масштаб", result.proportion_scale),
+        ("Общая визуальная согласованность", result.overall_coherence),
     ]
 
 
@@ -229,18 +202,14 @@ if "audit_result" in st.session_state:
             f"{name} — {principle.score}/100"
         ):
 
-            st.write(
-                "**Что видно**"
-            )
+            st.write("### Что видно")
 
             st.write(
                 principle.observation
             )
 
 
-            st.write(
-                "**Визуальные доказательства**"
-            )
+            st.write("### Визуальные доказательства")
 
             for evidence in principle.evidence:
 
@@ -249,18 +218,14 @@ if "audit_result" in st.session_state:
                 )
 
 
-            st.write(
-                "**Почему это важно**"
-            )
+            st.write("### Почему это важно")
 
             st.write(
                 principle.rationale
             )
 
 
-            st.write(
-                "**Влияние на восприятие**"
-            )
+            st.write("### Влияние на восприятие")
 
             st.write(
                 principle.perceptual_effect
@@ -269,18 +234,14 @@ if "audit_result" in st.session_state:
 
             if principle.problem:
 
-                st.write(
-                    "**Проблема**"
-                )
+                st.write("### Проблема")
 
                 st.write(
                     principle.problem
                 )
 
 
-            st.write(
-                "**Почему именно такая оценка**"
-            )
+            st.write("### Почему такая оценка")
 
             st.write(
                 principle.score_justification
@@ -289,9 +250,7 @@ if "audit_result" in st.session_state:
 
             if principle.recommendation:
 
-                st.write(
-                    "**Что изменить**"
-                )
+                st.write("### Что изменить")
 
                 st.write(
                     principle.recommendation
@@ -321,11 +280,12 @@ if "audit_result" in st.session_state:
             )
 
             st.write(
-                f"**Влияние:** {issue.perceptual_impact}"
+                f"**Влияние на восприятие:** "
+                f"{issue.perceptual_impact}"
             )
 
             st.write(
-                f"**Действие:** {issue.action}"
+                f"**Что сделать:** {issue.action}"
             )
 
 
@@ -351,7 +311,7 @@ if "audit_result" in st.session_state:
         )
 
 
-    st.header("3 конкретные рекомендации")
+    st.header("3 конкретных рекомендации")
 
 
     for recommendation in result.concrete_recommendations:
@@ -363,7 +323,13 @@ if "audit_result" in st.session_state:
 
     st.divider()
 
-    st.header("Промпт для улучшения")
+    st.header("Промпт для профессионального редизайна")
+
+    st.caption(
+        "Этот промпт предназначен не для косметического улучшения, "
+        "а для устранения выявленных проблем. Если исходная "
+        "композиция неудачна, генератору разрешено её перестроить."
+    )
 
 
     st.code(
@@ -372,8 +338,7 @@ if "audit_result" in st.session_state:
     )
 
 
-    st.header("Designer Brief")
-
+    st.header("Задание дизайнеру")
 
     st.code(
         result.designer_brief,

@@ -22,28 +22,73 @@ def build_user_prompt():
 Проведи полный профессиональный визуальный аудит
 предоставленного изображения.
 
-Оцени все 15 принципов дизайна.
+Оцени все 15 принципов дизайна:
 
-Для каждого принципа:
+1. composition
+2. visual_hierarchy
+3. balance
+4. contrast
+5. typography
+6. color
+7. negative_space
+8. alignment
+9. proximity_grouping
+10. repetition_rhythm
+11. unity_coherence
+12. readability_accessibility
+13. focal_point
+14. proportion_scale
+15. overall_coherence
 
-1. Опиши, что непосредственно видно.
-2. Приведи конкретные визуальные доказательства.
-3. Объясни связь с принципом дизайна.
-4. Объясни влияние на визуальное восприятие.
-5. Если есть проблема — сформулируй ее конкретно.
-6. Предложи конкретное изменение.
+Для каждого принципа обязательно дай:
 
-Не придумывай элементы, которых нет на изображении.
+- score — целое число от 0 до 100;
+- status;
+- observation;
+- evidence — список конкретных наблюдаемых признаков;
+- rationale;
+- perceptual_effect;
+- problem;
+- recommendation;
+- score_justification.
 
-Если принцип невозможно оценить,
-используй status = "not_applicable".
+Также верни:
 
-Каждая существенная критика должна быть доказана
-наблюдаемыми признаками изображения.
+- overall_design_score;
+- communication_score;
+- priority_issues;
+- strengths;
+- most_important_problems;
+- concrete_recommendations;
+- improvement_prompt;
+- designer_brief.
 
-Не ставь оценки случайно.
+КРИТИЧЕСКИ ВАЖНО:
 
-Верни результат строго в формате JSON-схемы.
+Анализируй только то, что реально видно.
+
+Не придумывай отсутствующие элементы,
+текст, шрифты, цвета, намерения автора
+или целевую аудиторию.
+
+Каждая существенная критика должна иметь
+конкретное визуальное доказательство.
+
+Объясняй цепочку:
+
+что видно
+→ почему это относится к принципу
+→ почему это проблема
+→ как это влияет на восприятие
+→ что конкретно изменить.
+
+Не используй общие фразы вроде
+"композиция слабая" без объяснения причины.
+
+Верни ТОЛЬКО валидный JSON.
+
+Не используй Markdown.
+Не добавляй текст до или после JSON.
 """
 
 
@@ -66,8 +111,9 @@ def analyze_image(image_bytes: bytes):
 
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
+
             response_mime_type="application/json",
-            response_schema=AuditResult,
+
             temperature=0.2,
         )
     )
@@ -84,20 +130,39 @@ def parse_result(raw_text: str):
 
     raw_text = raw_text.strip()
 
+    # Если модель вдруг вернула Markdown-обертку
+    if raw_text.startswith("```"):
+        raw_text = raw_text.replace(
+            "```json",
+            "",
+            1
+        )
+
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+
+        raw_text = raw_text.strip()
+
     try:
+
         data = json.loads(raw_text)
 
     except json.JSONDecodeError as error:
+
         raise ValueError(
             f"Gemini вернул некорректный JSON: {error}"
         )
 
     try:
-        result = AuditResult.model_validate(data)
+
+        result = AuditResult.model_validate(
+            data
+        )
 
     except Exception as error:
+
         raise ValueError(
-            f"JSON имеет неправильную структуру: {error}"
+            f"Gemini вернул JSON неправильной структуры: {error}"
         )
 
     return result
